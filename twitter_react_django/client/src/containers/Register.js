@@ -1,15 +1,15 @@
 import React from "react";
 import { connect } from "react-redux";
 import * as actions from "../actions/authActions";
-import { Form, Input, Select, Button, AutoComplete } from "antd";
+
+import { Form, Input, Button } from "antd";
 
 class RegistrationForm extends React.Component {
   state = {
     confirmDirty: false,
     autoCompleteResult: []
   };
-
-  handleSubmit = e => {
+  handleSubmit = async e => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {

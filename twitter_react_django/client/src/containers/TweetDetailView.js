@@ -50,9 +50,7 @@ class TweetDetail extends React.Component {
       console.log(this.state.tweet.author);
       currUser = this.state.tweet.author.username;
     }
-    const divStyle = {
-      display: "inline-block"
-    };
+
     return (
       <div>
         {this.state.tweet.content ? (

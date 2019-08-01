@@ -18,6 +18,12 @@ class UserList extends React.Component {
     });
   };
   fetchFollowing = () => {
+    axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+    axios.defaults.xsrfCookieName = "csrftoken";
+    axios.defaults.headers = {
+      "Content-Type": "application/json",
+      Authorization: `Token ${this.props.token}`
+    };
     axios
       .get(`http://127.0.0.1:8000/api/follows/${localStorage.getItem("user")}`)
       .then(res => {
@@ -25,7 +31,8 @@ class UserList extends React.Component {
           following: res.data.follows
         });
         console.log(res.data.follows);
-      });
+      })
+      .catch(console.log(""));
   };
   componentDidMount() {
     this.fetchUsers();

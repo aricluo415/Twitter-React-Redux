@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .models import Follows
 from .serializers import FollowsSerializer
 from rest_framework import viewsets
+from rest_framework.response import Response
 from rest_framework import permissions
 # Create your views here.
 
@@ -11,23 +12,20 @@ class FollowsViewSet(viewsets.ModelViewSet):
     serializer_class = FollowsSerializer
     lookup_field = 'user__username'
 
+    def retrieve(self, request, *args, **kwargs):
+        print(args)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        data = serializer.data
+        # here you can manipulate your data response
+        return Response(data)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
     def put(self, request, pk):
-        '''instance = self.queryset.get(pk=kwargs.get('pk'))
-        serializer = self.serializer_class(
-            instance, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()'''
+
         return Response({"method": "PUT"})
 
     def patch(self, request, pk):
         return Response({"method": "PATCH"})
-    '''def update(self, request, serializer, pk, partial):
-
-        instance = self.get_object()
-        instance.follows.add(4)
-        print(partial)
-        for x in instance.follows.all():
-            print(x.id)
-        print("HELLOOOOO", instance.follows)
-        instance.save()
-        return super().perform_update(serializer)'''

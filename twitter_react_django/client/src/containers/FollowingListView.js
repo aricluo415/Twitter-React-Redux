@@ -10,12 +10,25 @@ class FollowingList extends React.Component {
   };
   fetchFollowing = () => {
     const username = this.props.match.params.username;
-    axios.get(`http://127.0.0.1:8000/api/follows/${username}`).then(res => {
-      this.setState({
-        following: res.data.follows
-      });
-      console.log(res.data);
-    });
+    axios
+      .get(`http://127.0.0.1:8000/api/follows/${username}`)
+      .then(res => {
+        this.setState({
+          following: res.data.follows
+        });
+        console.log(res.data);
+      })
+      .catch(this.createFollowModel());
+  };
+  createFollowModel = async () => {
+    console.log(this.props.token);
+    axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+    axios.defaults.xsrfCookieName = "csrftoken";
+    axios.defaults.headers = {
+      "Content-Type": "application/json",
+      Authorization: `Token ${this.props.token}`
+    };
+    axios.post(`http://127.0.0.1:8000/api/follows/`, { follows: [] });
   };
   componentDidMount() {
     this.fetchFollowing();

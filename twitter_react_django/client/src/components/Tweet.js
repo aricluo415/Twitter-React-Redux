@@ -1,5 +1,5 @@
 import React from "react";
-import { List, Button } from "antd";
+import { List } from "antd";
 
 const Tweet = props => {
   return (

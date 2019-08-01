@@ -16,7 +16,7 @@ class forEachUser(serializers.ModelSerializer):
 
 
 class FollowsSerializer(serializers.ModelSerializer):
-    user = forEachUser(read_only=True)
+    user = UserSerializer(many=False, read_only=True)
     print(user)
     follows = forEachUser(many=True)
     print(follows)
@@ -26,7 +26,12 @@ class FollowsSerializer(serializers.ModelSerializer):
         fields = ("user", 'follows', "id")
 
     def create(self, validated_data):
-        return super().create(validated_data)
+        try:
+            follows = Follows.objects.get(user=validated_data['user'])
+            return follows
+        except:
+            follow = Follows(user=validated_data['user'])
+            return Follows.objects.create(user=validated_data['user'])
 
     def update(self, instance, validated_data):
         queryset = User.objects.all()
