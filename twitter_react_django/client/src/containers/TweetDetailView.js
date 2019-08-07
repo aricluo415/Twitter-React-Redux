@@ -4,65 +4,56 @@ import CustomForm from "../components/Form";
 import { connect } from "react-redux";
 import { Card, Button, Form } from "antd";
 import { withRouter } from "react-router-dom";
+import * as actions from "../actions/tweetActions";
+import Hoc from "../hoc/hoc";
 
 class TweetDetail extends React.Component {
   state = {
-    tweet: {}
+    content: "",
+    author: ""
   };
-  componentWillReceiveProps(newProps) {
-    if (newProps.token) {
-      axios.defaults.headers = {
-        "Content-Type": "application/json",
-        Authorization: newProps.token
-      };
-      const tweetID = this.props.match.params.tweetID;
-      axios.get(`http://127.0.0.1:8000/api/tweets/${tweetID}`).then(res => {
-        this.setState({
-          tweet: res.data
-        });
-        console.log(this.state.tweet);
-      });
+  componentWillReceiveProps(nextProps) {
+    if (
+      nextProps.token !== this.props.token &&
+      nextProps.token !== undefined &&
+      nextProps.token !== null
+    ) {
+      console.log("componentWillRecieveProps", nextProps);
+      this.props.getDetailTweet(
+        this.props.match.params.tweetID,
+        nextProps.token
+      );
     }
   }
-  handleDelete = async event => {
+  componentDidMount() {
+    console.log("mounted", this.props.token);
+    if (this.props.token !== null && this.props.token !== undefined)
+      this.props.getDetailTweet(
+        this.props.match.params.tweetID,
+        this.props.token
+      );
+  }
+  handleDelete = event => {
     event.preventDefault();
     if (this.props.token !== null) {
-      console.log(this.props.match.params);
-      const tweetID = this.props.match.params.tweetID;
-      axios.defaults.headers = {
-        "Content-Type": "application/json",
-        Authorization: `Token ${this.props.token}`
-      };
-      await axios
-        .delete(`http://127.0.0.1:8000/api/tweets/${tweetID}/`)
-        .then(res => {
-          console.log(res);
-          this.props.history.push("/");
-        });
+      this.props.deleteTweet(this.props.match.params.tweetID, this.props.token);
+      this.props.history.push("/");
     }
   };
 
   render() {
-    console.log(this.props);
-    console.log(localStorage.getItem("user"));
-    let currUser = "";
-    if (this.state.tweet.author) {
-      console.log(this.state.tweet.author);
-      currUser = this.state.tweet.author.username;
-    }
-
     return (
-      <div>
-        {this.state.tweet.content ? (
-          <Card>
-            <h1>{this.state.tweet.author.username}</h1>
-            <p>{this.state.tweet.content}</p>
-          </Card>
+      <Hoc>
+        {this.props.loading ? (
+          <h1>loading</h1>
         ) : (
-          <div />
+          <Card>
+            <h1>{this.props.author.username}</h1>
+            <p>{this.props.tweet.content}</p>
+          </Card>
         )}
 
-        {localStorage.getItem("user") === currUser ? (
+        {localStorage.getItem("user") === this.props.author.username ? (
           <div>
             <CustomForm
               {...this.props}
@@ -79,13 +70,27 @@ class TweetDetail extends React.Component {
         ) : (
           <div />
         )}
-      </div>
+      </Hoc>
     );
   }
 }
 const mapStateToProps = state => {
   return {
-    token: state.token
+    token: state.authReducer.token,
+    tweet: state.tweetReducer.tweets,
+    author: state.tweetReducer.author,
+    loading: state.tweetReducer.loading
   };
 };
-export default withRouter(connect(mapStateToProps)(TweetDetail));
+const mapDispatchToProps = dispatch => {
+  return {
+    getDetailTweet: (id, token) => dispatch(actions.getDetailTweet(id, token)),
+    deleteTweet: (id, token) => dispatch(actions.deleteTweet(id, token))
+  };
+};
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(TweetDetail)
+);

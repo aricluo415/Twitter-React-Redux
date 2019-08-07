@@ -12,20 +12,13 @@ class FollowsViewSet(viewsets.ModelViewSet):
     serializer_class = FollowsSerializer
     lookup_field = 'user__username'
 
-    def retrieve(self, request, *args, **kwargs):
+    '''def retrieve(self, request, *args, **kwargs):
         print(args)
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         data = serializer.data
         # here you can manipulate your data response
-        return Response(data)
+        return Response(data)'''
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-    def put(self, request, pk):
-
-        return Response({"method": "PUT"})
-
-    def patch(self, request, pk):
-        return Response({"method": "PATCH"})
+    '''def perform_create(self, serializer):
+        serializer.save(user=self.request.user)'''

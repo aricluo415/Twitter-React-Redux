@@ -14,7 +14,6 @@ class UserList extends React.Component {
       this.setState({
         users: res.data
       });
-      console.log(res.data);
     });
   };
   fetchFollowing = () => {
@@ -30,7 +29,6 @@ class UserList extends React.Component {
         this.setState({
           following: res.data.follows
         });
-        console.log(res.data.follows);
       })
       .catch(console.log(""));
   };
@@ -50,7 +48,6 @@ class UserList extends React.Component {
         });
       });
     } else {
-      console.log("no token");
       this.setState({
         users: []
       });
@@ -117,7 +114,7 @@ class UserList extends React.Component {
 }
 const mapStateToProps = state => {
   return {
-    token: state.token
+    token: state.authReducer.token
   };
 };
 export default withRouter(connect(mapStateToProps)(UserList));

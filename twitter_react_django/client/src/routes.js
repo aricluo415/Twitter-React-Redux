@@ -6,15 +6,19 @@ import TweetDetail from "./containers/TweetDetailView";
 import Register from "./containers/Register";
 import FollowingList from "./containers/FollowingListView";
 import UserList from "./containers/UserListView";
+import UserProfile from "./containers/UserProfile";
+import Layout from "./containers/Layout";
+import Hoc from "./hoc/hoc";
 const BaseRouter = () => (
-  <div>
+  <Hoc>
     <Route exact path="/" component={TweetList} />{" "}
+    <Route exact path="/profile/:username" component={UserProfile} />{" "}
     <Route exact path="/login/" component={Login} />{" "}
     <Route exact path="/register/" component={Register} />{" "}
     <Route exact path="/users/" component={UserList} />{" "}
     <Route exact path="/tweets/:tweetID" component={TweetDetail} />{" "}
     <Route exact path="/follows/:username" component={FollowingList} />{" "}
-  </div>
+  </Hoc>
 );
 
 export default BaseRouter;

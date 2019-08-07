@@ -1,63 +1,85 @@
 import React from "react";
-import axios from "axios";
 import { connect } from "react-redux";
 import CustomForm from "../components/Form";
 import Tweet from "../components/Tweet";
 import { withRouter } from "react-router-dom";
+import Pagination from "../components/Pagination";
+import * as actions from "../actions/tweetActions";
+import Hoc from "../hoc/hoc";
 
 class TweetList extends React.Component {
   state = {
-    tweets: []
+    page: 1
   };
-  fetchArticles = () => {
-    axios.get("http://127.0.0.1:8000/api/tweets/").then(res => {
-      this.setState({
-        tweets: res.data
-      });
-    });
-  };
+
   componentDidMount() {
-    this.fetchArticles();
+    console.log("mounted", this.props.token);
+    if (this.props.token !== undefined && this.props.token !== null) {
+      const page = 1;
+      this.props.getTweets(page, this.props.token);
+    }
   }
-  componentWillReceiveProps(newProps) {
-    if (newProps.token) {
-      axios.defaults.headers = {
-        "Content-Type": "application/json",
-        Authorization: newProps.token
-      };
-      axios.get("http://127.0.0.1:8000/api/tweets/").then(res => {
-        this.setState({
-          tweets: res.data
-        });
-      });
-    } else {
-      console.log("no token");
-      this.setState({
-        tweets: []
-      });
+  componentWillReceiveProps(nextProps) {
+    if (
+      nextProps.token !== this.props.token &&
+      nextProps.token !== undefined &&
+      nextProps.token !== null
+    ) {
+      this.props.getTweets(this.state.page, nextProps.token);
     }
   }
 
+  onChange = page => {
+    this.props.getTweets(page, this.props.token);
+    this.setState({ page: page });
+  };
+
   render() {
     return (
-      <div>
-        {this.props.token ? (
+      <Hoc>
+        {this.props.loading ? (
+          <h2>Loading....</h2>
+        ) : (
           <div>
             <h2>Tweets</h2>
-            <Tweet data={this.state.tweets} />
+            <Tweet data={this.props.tweets.results} />
+            <Pagination
+              data={{
+                page: this.state.page,
+                total: this.props.tweets.count,
+                range: 10
+              }}
+              nextPage={this.onChange}
+            />
             <h2>Create Tweet</h2>
-            <CustomForm requestType="post" tweetID={null} btnText="create" />
+            <CustomForm
+              requestType="post"
+              tweetID={null}
+              btnText="create"
+              passFunc={this.onChange}
+            />
           </div>
-        ) : (
-          <div />
         )}
-      </div>
+      </Hoc>
     );
   }
 }
 const mapStateToProps = state => {
   return {
-    token: state.token
+    token: state.authReducer.token,
+    tweets: state.tweetReducer.tweets,
+    loading: state.tweetReducer.loading
   };
 };
-export default withRouter(connect(mapStateToProps)(TweetList));
+const mapDispatchToProps = dispatch => {
+  return {
+    getTweets: (page, token) => dispatch(actions.getTweets(page, token))
+  };
+};
+
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(TweetList)
+);

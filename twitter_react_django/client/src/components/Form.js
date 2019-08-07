@@ -2,64 +2,53 @@ import React from "react";
 import { Form, Input, Button } from "antd";
 import { connect } from "react-redux";
 import axios from "axios";
+import * as actions from "../actions/tweetActions";
 
 const FormItem = Form.Item;
 
 class CustomForm extends React.Component {
-  handleFormSubmit = async (event, requestType, articleID) => {
-    //event.preventDefault();
+  handleFormSubmit = async (event, requestType, tweetID, passFunc) => {
+    event.preventDefault();
 
     const postObj = {
       content: event.target.elements.content.value
     };
 
-    axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-    axios.defaults.xsrfCookieName = "csrftoken";
-    axios.defaults.headers = {
-      "Content-Type": "application/json",
-      Authorization: `Token ${this.props.token}`
-    };
-
     if (requestType === "post") {
-      await axios
-        .post("http://127.0.0.1:8000/api/tweets/", postObj)
-        .then(res => {
-          if (res.status === 201) {
-            this.props.history.push(`/`);
-          }
-        });
+      this.props.postTweet(postObj, this.props.token);
+      this.props.passFunc(1);
+      console.log("pos", this.props);
     } else if (requestType === "put") {
-      await axios
-        .put(`http://127.0.0.1:8000/api/tweets/${articleID}/`, postObj)
-        .then(res => {
-          if (res.status === 200) {
-            this.props.history.push(`/`);
-          }
-        });
+      this.props.updateTweet(tweetID, postObj, this.props.token);
     }
   };
 
   render() {
+    console.log(this.props.passFunc);
     return (
       <div>
-        <Form
-          onSubmit={event =>
-            this.handleFormSubmit(
-              event,
-              this.props.requestType,
-              this.props.articleID
-            )
-          }
-        >
-          <FormItem label="Content">
-            <Input name="content" placeholder="Enter some content ..." />
-          </FormItem>
-          <FormItem>
-            <Button type="primary" htmlType="submit">
-              {this.props.btnText}
-            </Button>
-          </FormItem>
-        </Form>
+        {this.props.loading ? (
+          <h1>Loading</h1>
+        ) : (
+          <Form
+            onSubmit={event =>
+              this.handleFormSubmit(
+                event,
+                this.props.requestType,
+                this.props.tweetID
+              )
+            }
+          >
+            <FormItem label="Content">
+              <Input name="content" placeholder="Enter some content ..." />
+            </FormItem>
+            <FormItem>
+              <Button type="primary" htmlType="submit">
+                {this.props.btnText}
+              </Button>
+            </FormItem>
+          </Form>
+        )}
       </div>
     );
   }
@@ -67,8 +56,19 @@ class CustomForm extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    token: state.token
+    token: state.authReducer.token,
+    loading: state.tweetReducer.loading
+  };
+};
+const mapDispatchToProps = dispatch => {
+  return {
+    postTweet: (tweet, token) => dispatch(actions.postTweet(tweet, token)),
+    updateTweet: (id, updateObj, token) =>
+      dispatch(actions.updateTweet(id, updateObj, token))
   };
 };
 
-export default connect(mapStateToProps)(CustomForm);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CustomForm);

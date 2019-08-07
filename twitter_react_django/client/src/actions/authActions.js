@@ -47,7 +47,6 @@ export const authLogin = (username, password) => {
         password: password
       })
       .then(res => {
-        console.log(res);
         const token = res.data.key;
         const expirationDate = new Date(new Date().getTime() + 3600 * 1000);
         localStorage.setItem("token", token);
@@ -79,14 +78,6 @@ export const authSignup = (username, email, password1, password2) => {
         localStorage.setItem("expirationDate", expirationDate);
         localStorage.setItem("user", username);
         dispatch(authSuccess(token));
-        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-        axios.defaults.xsrfCookieName = "csrftoken";
-        axios.defaults.headers = {
-          "Content-Type": "application/json",
-          Authorization: `Token ${token}`
-        };
-        axios.post(`http://127.0.0.1:8000/api/follows/`, { follows: [] });
-
         dispatch(checkAuthTimeout(3600));
       })
       .catch(err => {

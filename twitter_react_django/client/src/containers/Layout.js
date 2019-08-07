@@ -3,6 +3,7 @@ import { Layout, Menu, Breadcrumb } from "antd";
 import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import * as actions from "../actions/authActions";
+import TweetList from "./TweetListView";
 
 const { Header, Content, Footer } = Layout;
 
@@ -44,6 +45,13 @@ class CustomLayout extends React.Component {
                 <Link to="/users">Users</Link>
               </Menu.Item>
             ) : null}
+            {this.props.isAuthenticated ? (
+              <Menu.Item key="6">
+                <Link to={`/profile/${localStorage.getItem("user")}`}>
+                  Profile
+                </Link>
+              </Menu.Item>
+            ) : null}
 
             <Menu.Item key="1">
               <Link to="/">Posts</Link>
@@ -70,7 +78,11 @@ class CustomLayout extends React.Component {
     );
   }
 }
-
+const mapStateToProps = state => {
+  return {
+    loading: state.authReducer.loading
+  };
+};
 const mapDispatchToProps = dispatch => {
   return {
     logout: () => dispatch(actions.logout())
@@ -79,7 +91,7 @@ const mapDispatchToProps = dispatch => {
 
 export default withRouter(
   connect(
-    null,
+    mapStateToProps,
     mapDispatchToProps
   )(CustomLayout)
 );

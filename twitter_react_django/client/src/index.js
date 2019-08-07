@@ -5,11 +5,12 @@ import { createStore, compose, applyMiddleware } from "redux";
 import { Provider } from "react-redux";
 import thunk from "redux-thunk";
 
-import reducer from "./reducers/authReducer";
+import reducer from "./reducers";
+import store from "./store";
 
 const composeEnhances = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-const store = createStore(reducer, composeEnhances(applyMiddleware(thunk)));
+const stores = createStore(reducer, composeEnhances(applyMiddleware(thunk)));
 
 const app = (
   <Provider store={store}>

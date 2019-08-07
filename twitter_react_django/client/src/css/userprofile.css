@@ -1,0 +1,10 @@
+.left {
+  width: 45%;
+  display: inline-block;
+  vertical-align: top;
+}
+.right {
+  width: 45%;
+  display: inline-block;
+  vertical-align: top;
+}
