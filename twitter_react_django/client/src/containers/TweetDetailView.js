@@ -43,7 +43,11 @@ class TweetDetail extends React.Component {
           <h1>loading</h1>
         ) : (
           <Card>
-            <h1>{this.props.author.username}</h1>
+            <h1>
+              <a href={`/profile/${this.props.author.username}`}>
+                {this.props.author.username}
+              </a>
+            </h1>
             <p>{this.props.tweet.content}</p>
           </Card>
         )}

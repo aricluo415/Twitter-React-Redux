@@ -7,7 +7,6 @@ import Register from "./containers/Register";
 import FollowingList from "./containers/FollowingListView";
 import UserList from "./containers/UserListView";
 import UserProfile from "./containers/UserProfile";
-import Layout from "./containers/Layout";
 import Hoc from "./hoc/hoc";
 const BaseRouter = () => (
   <Hoc>

@@ -21,7 +21,6 @@ export const getUserList = token => {
       Authorization: `Token ${token}`
     };
     axios.get(`http://127.0.0.1:8000/users/`).then(res => {
-      console.log("User List", res.data);
       dispatch(getUserListSuccess(res.data));
     });
   };

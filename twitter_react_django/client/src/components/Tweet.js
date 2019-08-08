@@ -7,14 +7,14 @@ const Tweet = props => {
       itemLayout="horizontal"
       dataSource={props.data}
       renderItem={item => (
-        <a href={`/tweets/${item.id}`}>
-          <List.Item>
-            <List.Item.Meta
-              title={<p> {item.author.username}</p>}
-              description={item.content}
-            />
-          </List.Item>
-        </a>
+        <List.Item>
+          <List.Item.Meta
+            title={
+              <a href={`/profile/${item.username}`}>{item.author.username}</a>
+            }
+            description={<a href={`/tweets/${item.id}`}>{item.content}</a>}
+          />
+        </List.Item>
       )}
     />
   );

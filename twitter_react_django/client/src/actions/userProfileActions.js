@@ -21,7 +21,6 @@ export const getUserProfile = (username, token) => {
       Authorization: `Token ${token}`
     };
     axios.get(`http://127.0.0.1:8000/api/profile/${username}`).then(res => {
-      console.log("profile", res.data);
       dispatch(getUserProfileSuccess(res.data));
     });
   };

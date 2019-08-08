@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import { List } from "antd";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";

@@ -3,13 +3,11 @@ import { Layout, Menu, Breadcrumb } from "antd";
 import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import * as actions from "../actions/authActions";
-import TweetList from "./TweetListView";
 
 const { Header, Content, Footer } = Layout;
 
 class CustomLayout extends React.Component {
   render() {
-    console.log(this.props.match);
     return (
       <Layout className="layout">
         <Header>

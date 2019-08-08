@@ -33,7 +33,6 @@ export const getFollowingList = (username, token) => {
       Authorization: `Token ${token}`
     };
     axios.get(`http://127.0.0.1:8000/api/follows/${username}/`).then(res => {
-      console.log("User List", res.data);
       dispatch(getFollowingListSuccess(res.data));
     });
   };
@@ -48,7 +47,6 @@ export const updateFollow = (username, follows, token) => {
     axios
       .put(`http://127.0.0.1:8000/api/follows/${username}/`, follows)
       .then(res => {
-        console.log("User List", res.data);
         dispatch(updateFollowSuccess(res.data));
       });
   };

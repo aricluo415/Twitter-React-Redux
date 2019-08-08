@@ -16,7 +16,6 @@ const getFollowingListStart = (state, action) => {
   });
 };
 const getFollowingListSucess = (state, action) => {
-  console.log("reducer", action.follows);
   return updateObject(state, {
     loading: false,
     follows: action.follows.follows
@@ -28,7 +27,6 @@ const updateFollowStart = (state, action) => {
   });
 };
 const updateFollowSuccess = (state, action) => {
-  console.log(action.follows);
   return updateObject(state, {
     loading: false,
     follows: action.follows.follows

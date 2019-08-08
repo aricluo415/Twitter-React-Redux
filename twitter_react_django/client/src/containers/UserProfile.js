@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import Tweet from "../components/Tweet";
@@ -38,7 +37,6 @@ class UserProfile extends React.Component {
   render() {
     return (
       <Hoc>
-        {console.log(this.props)}
         {this.props.loading ? (
           <h1>Loading...</h1>
         ) : (

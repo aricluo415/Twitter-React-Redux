@@ -7,11 +7,11 @@ const Follows = props => {
       itemLayout="horizontal"
       dataSource={props.data}
       renderItem={item => (
-        <a href={`/tweets/${item.id}`}>
-          <List.Item>
-            <List.Item.Meta title={<p> {item.username}</p>} description="ok" />
-          </List.Item>
-        </a>
+        <List.Item>
+          <List.Item.Meta
+            title={<a href={`/profile/${item.username}`}>{item.username}</a>}
+          />
+        </List.Item>
       )}
     />
   );

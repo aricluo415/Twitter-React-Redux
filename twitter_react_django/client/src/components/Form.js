@@ -1,7 +1,6 @@
 import React from "react";
 import { Form, Input, Button } from "antd";
 import { connect } from "react-redux";
-import axios from "axios";
 import * as actions from "../actions/tweetActions";
 
 const FormItem = Form.Item;
