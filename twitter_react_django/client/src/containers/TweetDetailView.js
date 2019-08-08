@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import CustomForm from "../components/Form";
 import { connect } from "react-redux";
 import { Card, Button, Form } from "antd";
@@ -8,10 +7,6 @@ import * as actions from "../actions/tweetActions";
 import Hoc from "../hoc/hoc";
 
 class TweetDetail extends React.Component {
-  state = {
-    content: "",
-    author: ""
-  };
   componentWillReceiveProps(nextProps) {
     if (
       nextProps.token !== this.props.token &&

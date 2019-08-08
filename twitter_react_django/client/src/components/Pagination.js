@@ -4,7 +4,6 @@ import { Pagination as Paginate } from "antd";
 const Pagination = props => {
   return (
     <div>
-      {console.log(props.nextPage)}
       <Paginate
         total={props.data.total}
         showTotal={(total, range) =>

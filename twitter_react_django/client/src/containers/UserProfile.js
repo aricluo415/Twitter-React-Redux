@@ -5,6 +5,8 @@ import { withRouter } from "react-router-dom";
 import Tweet from "../components/Tweet";
 import Follows from "../components/Follows";
 import "../css/userprofile.css";
+import * as actions from "../actions/userProfileActions";
+import Hoc from "../hoc/hoc";
 class UserProfile extends React.Component {
   state = {
     user: "",
@@ -12,65 +14,68 @@ class UserProfile extends React.Component {
     tweets: []
   };
 
-  fetchProfile = () => {
-    const username = this.props.match.params.username;
-    axios
-      .get(`http://127.0.0.1:8000/api/profile/${username}`)
-      .then(res => {
-        this.setState({
-          user: res.data.user.username,
-          follows: res.data.follows.follows,
-          tweets: res.data.tweets
-        });
-      })
-      .catch(console.log(""));
-  };
   componentDidMount() {
-    this.fetchProfile();
-  }
-  /*componentWillReceiveProps(newProps) {
-    if (newProps.token) {
-      axios.defaults.headers = {
-        "Content-Type": "application/json",
-        Authorization: newProps.token
-      };
-      const username = this.props.match.params.username;
-      axios.get(`http://127.0.0.1:8000/api/profile/${username}`).then(res => {
-        this.setState({
-          user: res.data.user.username,
-          follows: res.data.follows.follows,
-          tweets: res.data.tweets
-        });
-        console.log(res.data);
-      });
-    } else {
-      console.log("no token");
-      this.setState({
-        profiles: []
-      });
+    if (this.props.token !== undefined && this.props.token !== null) {
+      this.props.getUserProfile(
+        this.props.match.params.username,
+        this.props.token
+      );
     }
-  }*/
+  }
+  componentWillReceiveProps(nextProps) {
+    if (
+      nextProps.token !== this.props.token &&
+      nextProps.token !== undefined &&
+      nextProps.token !== null
+    ) {
+      this.props.getUserProfile(
+        this.props.match.params.username,
+        nextProps.token
+      );
+    }
+  }
 
   render() {
     return (
-      <div>
-        <h2>{this.state.user}</h2>
+      <Hoc>
+        {console.log(this.props)}
+        {this.props.loading ? (
+          <h1>Loading...</h1>
+        ) : (
+          <div>
+            <h2>{this.props.user}</h2>
 
-        <div className="left">
-          <h1>Tweets</h1>
-          <Tweet data={this.state.tweets} />
-        </div>
-        <div className="right">
-          <h1>Follows</h1>
-          <Follows data={this.state.follows} />
-        </div>
-      </div>
+            <div className="left">
+              <h1>Tweets</h1>
+              <Tweet data={this.props.tweets} />
+            </div>
+            <div className="right">
+              <h1>Follows</h1>
+              <Follows data={this.props.follows} />
+            </div>
+          </div>
+        )}
+      </Hoc>
     );
   }
 }
 const mapStateToProps = state => {
   return {
-    token: state.authReducer.token
+    token: state.authReducer.token,
+    tweets: state.userProfileReducer.tweets,
+    follows: state.userProfileReducer.follows,
+    user: state.userProfileReducer.user
   };
 };
-export default withRouter(connect(mapStateToProps)(UserProfile));
+const mapDispatchToProps = dispatch => {
+  return {
+    getUserProfile: (username, token) =>
+      dispatch(actions.getUserProfile(username, token))
+  };
+};
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(UserProfile)
+);

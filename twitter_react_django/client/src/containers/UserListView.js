@@ -1,103 +1,81 @@
 import React from "react";
-import axios from "axios";
 import { connect } from "react-redux";
 import { List, Button } from "antd";
 import { withRouter } from "react-router-dom";
+import * as userListAction from "../actions/userListActions";
+import * as followAction from "../actions/followActions";
 
 class UserList extends React.Component {
-  state = {
-    users: [],
-    following: []
-  };
-  fetchUsers = () => {
-    axios.get("http://127.0.0.1:8000/users/").then(res => {
-      this.setState({
-        users: res.data
-      });
-    });
-  };
-  fetchFollowing = () => {
-    axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-    axios.defaults.xsrfCookieName = "csrftoken";
-    axios.defaults.headers = {
-      "Content-Type": "application/json",
-      Authorization: `Token ${this.props.token}`
-    };
-    axios
-      .get(`http://127.0.0.1:8000/api/follows/${localStorage.getItem("user")}`)
-      .then(res => {
-        this.setState({
-          following: res.data.follows
-        });
-      })
-      .catch(console.log(""));
-  };
   componentDidMount() {
-    this.fetchUsers();
-    this.fetchFollowing();
+    if (this.props.token !== null && this.props.token !== undefined) {
+      this.props.getFollowingList(
+        localStorage.getItem("user"),
+        this.props.token
+      );
+      this.props.getUserList(this.props.token);
+      this.setState({ follows: this.props.follows, users: this.props.users });
+    }
   }
-  componentWillReceiveProps(newProps) {
-    if (newProps.token) {
-      axios.defaults.headers = {
-        "Content-Type": "application/json",
-        Authorization: newProps.token
-      };
-      axios.get("http://127.0.0.1:8000/users/").then(res => {
-        this.setState({
-          users: res.data
-        });
-      });
-    } else {
-      this.setState({
-        users: []
-      });
+  componentWillReceiveProps(nextProps) {
+    if (
+      nextProps.token !== this.props.token &&
+      nextProps.token !== undefined &&
+      nextProps.token !== null
+    ) {
+      this.props.getFollowingList(
+        localStorage.getItem("user"),
+        nextProps.token
+      );
+      this.props.getUserList(nextProps.token);
     }
   }
   followOrNot(user) {
-    if (this.state.following.some(e => e.id === user)) {
-      console.log("Exists", user);
+    if (this.props.follows.some(e => e.id === user)) {
       return true;
     }
     return false;
   }
-  handleUpdate = async (event, user) => {
-    if (this.props.token !== null) {
-      axios.defaults.headers = {
-        "Content-Type": "application/json",
-        Authorization: `Token ${this.props.token}`
-      };
+  handleUpdate = async (event, user, action) => {
+    if (this.props.token !== null && this.props.token !== undefined) {
       const follows = {
         user: { username: localStorage.getItem("user") },
         follows: [user]
       };
-      await axios
-        .put(
-          `http://127.0.0.1:8000/api/follows/${localStorage.getItem("user")}/`,
-          follows
-        )
-        .then(res => {
-          console.log(res.data.follows);
-          this.setState({ following: res.data.follows });
-        });
+      this.props.updateFollow(
+        localStorage.getItem("user"),
+        follows,
+        this.props.token
+      );
     }
   };
   render() {
     return (
       <div>
-        {this.props.token ? (
+        {this.props.followLoading === true &&
+        this.props.userLoading === true ? (
+          <h1>Loading..</h1>
+        ) : (
           <div>
             <List
               itemLayout="horizontal"
-              dataSource={this.state.users}
+              dataSource={this.props.users}
               renderItem={item => (
                 <List.Item>
                   <List.Item.Meta title={<p> {item.username}</p>} />
                   {this.followOrNot(item.id) ? (
-                    <Button onClick={event => this.handleUpdate(event, item)}>
+                    <Button
+                      onClick={event =>
+                        this.handleUpdate(event, item, "unfollow")
+                      }
+                    >
                       Unfollow
                     </Button>
                   ) : (
-                    <Button onClick={event => this.handleUpdate(event, item)}>
+                    <Button
+                      onClick={event =>
+                        this.handleUpdate(event, item, "follow")
+                      }
+                    >
                       Follow
                     </Button>
                   )}
@@ -105,8 +83,6 @@ class UserList extends React.Component {
               )}
             />
           </div>
-        ) : (
-          <div />
         )}
       </div>
     );
@@ -114,7 +90,25 @@ class UserList extends React.Component {
 }
 const mapStateToProps = state => {
   return {
-    token: state.authReducer.token
+    token: state.authReducer.token,
+    users: state.userListReducer.users,
+    userLoading: state.userListReducer.loading,
+    followLoading: state.followReducer.loading,
+    follows: state.followReducer.follows
   };
 };
-export default withRouter(connect(mapStateToProps)(UserList));
+const mapDispatchToProps = dispatch => {
+  return {
+    getUserList: token => dispatch(userListAction.getUserList(token)),
+    getFollowingList: (username, token) =>
+      dispatch(followAction.getFollowingList(username, token)),
+    updateFollow: (username, follows, token) =>
+      dispatch(followAction.updateFollow(username, follows, token))
+  };
+};
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(UserList)
+);

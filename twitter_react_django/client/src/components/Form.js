@@ -17,14 +17,12 @@ class CustomForm extends React.Component {
     if (requestType === "post") {
       this.props.postTweet(postObj, this.props.token);
       this.props.passFunc(1);
-      console.log("pos", this.props);
     } else if (requestType === "put") {
       this.props.updateTweet(tweetID, postObj, this.props.token);
     }
   };
 
   render() {
-    console.log(this.props.passFunc);
     return (
       <div>
         {this.props.loading ? (

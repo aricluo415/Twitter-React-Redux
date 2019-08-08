@@ -13,7 +13,6 @@ class TweetList extends React.Component {
   };
 
   componentDidMount() {
-    console.log("mounted", this.props.token);
     if (this.props.token !== undefined && this.props.token !== null) {
       const page = 1;
       this.props.getTweets(page, this.props.token);

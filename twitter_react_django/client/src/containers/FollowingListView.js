@@ -3,50 +3,39 @@ import axios from "axios";
 import { List } from "antd";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-
+import * as actions from "../actions/followActions";
 class FollowingList extends React.Component {
-  state = {
-    following: []
-  };
-  fetchFollowing = () => {
-    const username = this.props.match.params.username;
-    axios.get(`http://127.0.0.1:8000/api/follows/${username}`).then(res => {
-      this.setState({
-        following: res.data.follows
-      });
-    });
-  };
   componentDidMount() {
-    this.fetchFollowing();
+    if (this.props.token !== undefined && this.props.token !== null) {
+      this.props.getFollowingList(
+        localStorage.getItem("user"),
+        this.props.token
+      );
+    }
   }
-  componentWillReceiveProps(newProps) {
-    if (newProps.token) {
-      axios.defaults.headers = {
-        "Content-Type": "application/json",
-        Authorization: newProps.token
-      };
-      const username = this.props.match.params.username;
-      axios.get(`http://127.0.0.1:8000/api/follows/${username}`).then(res => {
-        this.setState({
-          following: res.data.follows
-        });
-      });
-    } else {
-      console.log("no token");
-      this.setState({
-        following: []
-      });
+  componentWillReceiveProps(nextProps) {
+    if (
+      nextProps.token !== this.props.token &&
+      nextProps.token !== undefined &&
+      nextProps.token !== null
+    ) {
+      this.props.getFollowingList(
+        localStorage.getItem("user"),
+        nextProps.token
+      );
     }
   }
 
   render() {
     return (
       <div>
-        {this.props.token ? (
+        {this.props.loading ? (
+          <h1>Loading...</h1>
+        ) : (
           <div>
             <List
               itemLayout="horizontal"
-              dataSource={this.state.following}
+              dataSource={this.props.follows}
               renderItem={item => (
                 <List.Item>
                   <List.Item.Meta title={<p> {item.username}</p>} />
@@ -54,8 +43,6 @@ class FollowingList extends React.Component {
               )}
             />
           </div>
-        ) : (
-          <div />
         )}
       </div>
     );
@@ -63,7 +50,20 @@ class FollowingList extends React.Component {
 }
 const mapStateToProps = state => {
   return {
-    token: state.authReducer.token
+    token: state.authReducer.token,
+    follows: state.followReducer.follows,
+    loading: state.followReducer.loading
   };
 };
-export default withRouter(connect(mapStateToProps)(FollowingList));
+const mapDispatchToProps = dispatch => {
+  return {
+    getFollowingList: (username, token) =>
+      dispatch(actions.getFollowingList(username, token))
+  };
+};
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(FollowingList)
+);

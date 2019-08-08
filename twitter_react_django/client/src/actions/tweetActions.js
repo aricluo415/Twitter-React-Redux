@@ -84,7 +84,6 @@ export const getTweets = (page, token) => {
       Authorization: `Token ${token}`
     };
     axios.get(`http://127.0.0.1:8000/api/tweets/?page=${page}`).then(res => {
-      console.log(res.data);
       dispatch(getTweetSuccess(res.data));
     });
   };
@@ -97,7 +96,6 @@ export const getDetailTweet = (id, token) => {
     };
     dispatch(getDetailTweetStart());
     axios.get(`http://127.0.0.1:8000/api/tweets/${id}`).then(res => {
-      console.log("got detail tweet", res.data);
       dispatch(getDetailTweetSuccess(res.data));
     });
   };
@@ -110,7 +108,6 @@ export const deleteTweet = (id, token) => {
       Authorization: `Token ${token}`
     };
     axios.delete(`http://127.0.0.1:8000/api/tweets/${id}`).then(res => {
-      console.log("deleted", res.data);
       dispatch(deleteTweetSuccess(res.data));
     });
   };
