@@ -60,26 +60,28 @@ class UserList extends React.Component {
               itemLayout="horizontal"
               dataSource={this.props.users}
               renderItem={item => (
-                <List.Item>
-                  <List.Item.Meta title={<p> {item.username}</p>} />
-                  {this.followOrNot(item.id) ? (
-                    <Button
-                      onClick={event =>
-                        this.handleUpdate(event, item, "unfollow")
-                      }
-                    >
-                      Unfollow
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={event =>
-                        this.handleUpdate(event, item, "follow")
-                      }
-                    >
-                      Follow
-                    </Button>
-                  )}
-                </List.Item>
+                <a href={`/profile/${item.username}`}>
+                  <List.Item>
+                    <List.Item.Meta title={<p> {item.username}</p>} />
+                    {this.followOrNot(item.id) ? (
+                      <Button
+                        onClick={event =>
+                          this.handleUpdate(event, item, "unfollow")
+                        }
+                      >
+                        Unfollow
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={event =>
+                          this.handleUpdate(event, item, "follow")
+                        }
+                      >
+                        Follow
+                      </Button>
+                    )}
+                  </List.Item>
+                </a>
               )}
             />
           </div>
